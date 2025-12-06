@@ -26,7 +26,7 @@ export type RootStackParamList = {
     Inicio_Sesion: undefined,
     Registro: undefined,
     Pedidos: undefined, 
-    Ver_Pedido: undefined,
+    Ver_Pedido: { id_pedido: number },
     Carrito: undefined,
     Productos_Vendedor: undefined,
     Registro_Productos: undefined,

@@ -75,6 +75,16 @@ const estilos = StyleSheet.create({
         fontWeight: 600
     },
 
+    input_modal_pago: {
+        width: '80%',
+        backgroundColor: '#FFEDD0',
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#153B40',
+        fontSize: 15,
+        color: 'black',
+        paddingHorizontal: 5
+    },
 
 
 
@@ -105,7 +115,7 @@ const estilos = StyleSheet.create({
     mas_boton_registrar: {
         fontSize: 50,
         color: '#FFEDD0'
-    }
+    },
  
 })
 

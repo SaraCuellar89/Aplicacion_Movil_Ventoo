@@ -5,6 +5,9 @@ import estilos from '../Componentes/css/Estilos_Tarjetas_Productos'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type CarritoModalPagoProps = {
+    productos: Producto[];
+    setProductos: React.Dispatch<React.SetStateAction<Producto[]>>;
+    setTotal: (total: number) => void;
     setVisible: (value: boolean) => void;
 }
 
@@ -17,12 +20,9 @@ type Producto = {
 };
 
 
-const Info_Carrito: React.FC<CarritoModalPagoProps> = ({ setVisible }) => {
+const Info_Carrito: React.FC<CarritoModalPagoProps> = ({ setVisible, setTotal, productos,setProductos, }) => {
 
-    const [aceptar, setAceptar] = useState(false)
-
-
-    const [productos, setProductos] = useState<Producto[]>([]);
+    const [aceptar, setAceptar] = useState(false);
     
     // ============ Obtener productos apenas cargue la pagina ============
     useEffect(() => {
@@ -46,7 +46,7 @@ const Info_Carrito: React.FC<CarritoModalPagoProps> = ({ setVisible }) => {
         }
 
         Obtener_Productos()
-    }, [])
+    }, [setProductos])
 
 
 
@@ -85,9 +85,15 @@ const Info_Carrito: React.FC<CarritoModalPagoProps> = ({ setVisible }) => {
                     }
                 }
             ]
-        );
-
+        )
     }
+
+    // ============ Obtener total del carrito ============
+    useEffect(() => {
+        const total = productos.reduce((sum, p) => sum + Number(p.Precio) * Number(p.Cantidad), 0);
+        setTotal(total);
+    }, [productos]);
+
 
 
 
@@ -103,21 +109,24 @@ const Info_Carrito: React.FC<CarritoModalPagoProps> = ({ setVisible }) => {
             (
                 <>
                     <View style={estilos.caja_productos_info_carrito}>
-
-                        {productos.map((p) => (
-                            <View style={estilos.producto_info_carrito} key={p.Id_producto}>
-                                <Tarjeta_Producto
-                                    id_producto={p.Id_producto}
-                                    nombre={p.Nombre}
-                                    precio={p.Precio}
-                                    imagen={p.Imagen}
-                                />
-                                <Text>Cantidad: {p.Cantidad}</Text>
-                                <TouchableOpacity style={estilos.btn_eliminar_info_carrito} onPress={() => Eliminar_Producto_Carrito(p.Id_producto)}>
-                                    <Text style={estilos.texto_btn_eliminar_info_carrito}>Eliminar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        ))}
+                        {productos.map((p) => {
+                            const subtotal = Number(p.Precio) * Number(p.Cantidad);
+                            return(
+                                <View style={estilos.producto_info_carrito} key={p.Id_producto}>
+                                    <Tarjeta_Producto
+                                        id_producto={p.Id_producto}
+                                        nombre={p.Nombre}
+                                        precio={p.Precio}
+                                        imagen={p.Imagen}
+                                    />
+                                    <Text>Cantidad: {p.Cantidad}</Text>
+                                    <Text>SubTotal: ${subtotal.toLocaleString()}</Text>
+                                    <TouchableOpacity style={estilos.btn_eliminar_info_carrito} onPress={() => Eliminar_Producto_Carrito(p.Id_producto)}>
+                                        <Text style={estilos.texto_btn_eliminar_info_carrito}>Eliminar</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        })}
 
                     </View>
 

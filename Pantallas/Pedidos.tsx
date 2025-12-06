@@ -32,9 +32,6 @@ const Pedidos = () => {
 
                 <View style={estilos.caja_resenas_ver_productos}>
                     <Tarjeta_Pedido/>
-                    <Tarjeta_Pedido/>
-                    <Tarjeta_Pedido/>
-                    <Tarjeta_Pedido/>
                 </View>
                 
             </ScrollView>

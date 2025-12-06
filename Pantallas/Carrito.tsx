@@ -7,7 +7,19 @@ import estilos from '../Pantallas/css/Estilos_Principal';
 import Info_Carrito from "../Componentes/Info_Carrito";
 import Modal_Pago from "../Componentes/Modal_Pago";
 
+
+type Producto = {
+    Id_producto: number;
+    Nombre: string;
+    Precio: number;
+    Imagen: string;
+    Cantidad: number;
+};
+
 const Carrito = () => {
+
+    const [productos, setProductos] = useState<Producto[]>([]);
+    const [total, setTotal] = useState(0)
 
     //Estado del modal
     const [visible, setVisible] = useState(false);
@@ -25,11 +37,16 @@ const Carrito = () => {
 
                 <Info_Carrito
                     setVisible={setVisible}
+                    setTotal={setTotal}
+                    productos={productos}
+                    setProductos={setProductos}
                 />
 
                 <Modal_Pago
                     visible={visible}
                     setVisible={setVisible}
+                    total={total}
+                    productos={productos}
                 />
                 
             </ScrollView>
