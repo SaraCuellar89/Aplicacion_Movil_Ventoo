@@ -38,19 +38,19 @@ const estilos_encabezado = StyleSheet.create({
 
     // --------- Estilo carrusel ---------
 
-    img_carrusel: {
-        width: 320,
-        minWidth: 150,
-        height: 150,
+    contenedor_carrusel: {
+        width: "100%",
+        height: 220,
+        padding: 20,
+    },
+
+    caja_carrusel: {
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
         borderRadius: 10,
         borderWidth: 3,
-        borderColor: '#153B40'
-    },
-    contenedor_carrusel: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingVertical: 20,
+        borderColor: "#153B40",
     },
 
 

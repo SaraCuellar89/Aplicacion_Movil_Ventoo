@@ -38,7 +38,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const App = () => {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Inicio">
+            <Stack.Navigator initialRouteName="Principal">
                 <Stack.Screen 
                     name="Principal" 
                     component={Principal} 
