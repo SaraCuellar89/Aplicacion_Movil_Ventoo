@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import Buscador from "../Componentes/Buscador";
 import { SafeAreaView } from "react-native-safe-area-context";
 import estilos from '../Pantallas/css/Estilos_Principal';
+import Buscador from "../Componentes/Buscador";
 import Tarjeta_Producto from "../Componentes/Tarjeta_Producto";
 import Encabezado from "../Componentes/Encabezado";
 import Menu from "../Componentes/Menu";
@@ -21,9 +21,11 @@ type Producto = {
 
 const Buscar = () => {
 
-    const [productos, setProductos] = useState<Producto[]>([]);
-
     const navigation = useNavigation<navigationProp>();
+
+    // ============ Estado necesario para renderizar los productos ============
+    const [productos, setProductos] = useState<Producto[]>([])
+
 
     return(
         <SafeAreaView style={{ flex: 1, backgroundColor: '#153B40' }}>
@@ -42,7 +44,7 @@ const Buscar = () => {
                     </TouchableOpacity>
 
                     <Buscador
-                        productos={(productos) => setProductos(productos)}
+                        setProductos={setProductos}
                     />
 
                     <View style={estilos.caja_tarjetas_productos_buscar}>

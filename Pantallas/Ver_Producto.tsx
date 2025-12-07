@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Encabezado from "../Componentes/Encabezado";
 import Menu from "../Componentes/Menu";
 import estilos from '../Pantallas/css/Estilos_Principal';
-import { useNavigation, useRoute, RouteProp  } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from "../App";
 import Info_Producto from "../Componentes/Info_Producto";
 import Formu_Resenas from "../Componentes/Formu_Resenas";
 import Tarjeta_Producto from "../Componentes/Tarjeta_Producto";
 import Tarjeta_Resena from "../Componentes/Tarjeta_Resena";
+import { useNavigation, useRoute, RouteProp  } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from "../App";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type navigationProp = NativeStackNavigationProp<RootStackParamList, "Principal">;
 type VerProductoRouteProp = RouteProp<RootStackParamList, 'Ver_Producto'>;
@@ -23,14 +24,20 @@ type Producto = {
     Imagen: string;
 };
 
-
-
 type Resena = {
     Id_resena: number;
     NombreUsuario: string;
     Estrellas: number;
     Comentario: string;
+    Id_usuario: number;
 };
+
+type Usuario = {
+    Id_usuario: number;
+    Nombre: string;
+    Email: string;
+    Rol: string;
+}
 
 
 
@@ -42,7 +49,7 @@ const Ver_Producto = () => {
     const { id_producto } = route.params;
 
 
-    //Obtener productos del vendedor
+    // ============ Obtener Productos del vendedor ============
     const [productos_vendedor, setProducos_vendedor] = useState<Producto[]>([]);
 
     useEffect(() => {
@@ -63,7 +70,7 @@ const Ver_Producto = () => {
 
 
 
-    //Obtener reseñas
+    // ============ Obtener Reseñas ============
     const [resenas, setResenas] = useState<Resena[]>([])
     
     useEffect(() => {
@@ -72,6 +79,7 @@ const Ver_Producto = () => {
                 const res = await fetch(`https://backend-ventoo.vercel.app/resenas/${id_producto}`)
                 const datos = await res.json()
 
+                console.log(datos)
                 setResenas(datos.resenas)
             }
             catch(error){
@@ -81,6 +89,254 @@ const Ver_Producto = () => {
 
         Obtener_Resenas()
     }, [id_producto])
+
+
+
+    // ============ Promedio de estrellas ============
+    const promedioNum =
+        resenas.length > 0
+            ? resenas.reduce((acc, r) => acc + r.Estrellas, 0) / resenas.length
+            : 0;
+
+    const promedio = promedioNum.toFixed(1); // string para mostrar
+    const estrellasVisuales =
+        "★".repeat(Math.round(promedioNum)) +
+        "☆".repeat(5 - Math.round(promedioNum));
+
+
+
+    // ============ Funcion para aumentar o disminuir la cantidad de un producto ============
+    const [cantidad, setCantidad] = useState(0)
+
+    const Aumentar = () => {
+        if(cantidad === 20){
+            setCantidad(20)
+        }
+        else{
+            setCantidad(cantidad + 1)
+        }
+    }
+
+    const Disminuir = () => {
+        if(cantidad === 1){
+            setCantidad(1)
+        }
+        else{
+            setCantidad(cantidad - 1)
+        }
+    }
+
+
+
+    // ============ Obtener la informacion detallada de un producto ============
+    const [info_Producto, setInfo_producto] = useState<Info_Producto | null>(null);
+
+    useEffect(() => {
+        const Obtener_Info_Producto = async () => {
+            try{
+                const res = await fetch(`https://backend-ventoo.vercel.app/producto/${id_producto}`)
+                const datos = await res.json()
+                
+                setInfo_producto(datos.producto)
+                setCantidad(1)
+            }  
+            catch(error){
+                console.log('Error: ' + error)
+            }
+        }
+        Obtener_Info_Producto()
+    }, [id_producto])
+
+
+
+
+    // ============ funcion para agregar productos al carrito ============
+    const Agregar_Carrito = async () => {
+
+        const token = await AsyncStorage.getItem("token");
+
+        try{
+            const res = await fetch('https://backend-ventoo.vercel.app/carrito/agregar', {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                body: JSON.stringify({Id_producto:id_producto, Cantidad:cantidad})
+            })
+
+            const datos = await res.json()
+
+            if(!datos.success){
+                return Alert.alert('No se pudo agregar el producto al carrito')
+            }
+
+            Alert.alert('¡Producto agregado a tu carrito!')
+        }
+        catch(error){
+            console.log('Error: ' + error)
+        }
+    }
+
+
+    // ============ Funcion para Subir una reseña ============
+    const [comentario, setComentario] = useState('')
+    const [estrellas, setEstrellas] = useState(1)
+
+    const Subir_Resena = async () => {
+
+        if(comentario.trim().length < 10){
+            return Alert.alert('El comentario debe ser mayor a 10 reseñas')
+        }
+
+        const token = await AsyncStorage.getItem("token");
+
+        try{
+            const res = await fetch('https://backend-ventoo.vercel.app/resena', {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                body: JSON.stringify({Id_producto: id_producto, Comentario: comentario, Estrellas: estrellas})
+            })
+
+            const datos = await res.json()
+
+            if(!datos.success){
+                return Alert.alert('No se pudo subir la reseña')
+            }
+
+            Alert.alert('¡Reseña Subida!')
+            setComentario('')
+            setEstrellas(1)
+        }
+        catch(error){
+            console.error('Error: ' + error)
+        }
+    }
+
+
+    // ============ Obtener el id del usuario en sesion ============
+    const [id_usuario_logueado , setId_usuario_logueado ] = useState<number | null>(null)
+    const [info_usuario, setInfo_usuario] = useState<Usuario | null>(null);
+
+    useEffect(() => {
+        const Obtener_Info_Usuario = async () => {
+
+            const token = await AsyncStorage.getItem("token");
+
+            try {
+                const res = await fetch('https://backend-ventoo.vercel.app/usuario_logueado', {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                const datos = await res.json();
+
+                if (datos.success) {
+                    setId_usuario_logueado(datos.usuario.Id_usuario);
+                    setInfo_usuario(datos.usuario)
+                } else {
+                    setId_usuario_logueado(null);
+                }
+
+            } catch (error) {
+                console.error('Error: ' + error);
+            }
+        };
+
+        Obtener_Info_Usuario();
+    }, []);
+
+
+
+
+    // ============ Funcion Para editar una reseña ============
+    const Editar_Resena = async (id_resena: number, comentario: string, estrellas: number) => {
+        
+        if(comentario.trim().length < 10){
+            return Alert.alert('El comentario debe ser mayor a 10 reseñas')
+        }
+
+        const token = await AsyncStorage.getItem("token");
+
+        try {
+            const res = await fetch(`https://backend-ventoo.vercel.app/resena/${id_resena}`, {
+                method: "PUT",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token 
+                },
+                body: JSON.stringify({
+                    Comentario: comentario,  // <-- usar el parámetro
+                    Estrellas: estrellas     // <-- usar el parámetro
+                })
+            });
+
+            const datos = await res.json();
+
+            if(!datos.success){
+                return Alert.alert("No se pudo editar la reseña");
+            }
+
+            // Actualizamos el estado local
+            setResenas(prev => prev.map(r =>
+                r.Id_resena === id_resena
+                    ? { ...r, Comentario: comentario, Estrellas: estrellas }
+                    : r
+            ));
+
+            Alert.alert("¡Reseña Editada!");
+            navigation.replace("Ver_Producto", { id_producto });
+        }
+        catch (error) {
+            console.log('Error: ' + error)
+        }
+    }
+
+
+
+    // ============ Funcion para eliminar una reseña ============
+    const Eliminar_Resena = async (id_resena: number) => {
+        Alert.alert(
+            "Eliminar Reseña",
+            "¿Quieres eliminar esta reseña?",
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel"
+                },
+                {
+                    text: "Sí",
+                    onPress: async () => {
+                        const token = await AsyncStorage.getItem("token");
+
+                        try{
+                            const res = await fetch(`https://backend-ventoo.vercel.app/resena/${id_resena}`, {
+                                method: "DELETE",
+                                headers: { 
+                                    "Content-Type": "application/json",
+                                    "Authorization": "Bearer " + token 
+                                }
+                            });
+
+                            const datos = await res.json()
+
+                            if(!datos.success){
+                                return Alert.alert('No se pudo eliminar la reseña')
+                            }
+
+                            // Filtramos la reseña eliminada del estado
+                            setResenas(prev => prev.filter(r => r.Id_resena !== id_resena));
+
+                            Alert.alert('Reseña Eliminada')
+                        }
+                        catch(error){
+                            console.log('Error: ' + error)
+                        }
+                    }
+                }
+            ]
+        )
+    }
 
 
     return(
@@ -100,7 +356,12 @@ const Ver_Producto = () => {
                     </TouchableOpacity>
 
                     <Info_Producto
-                        id_producto={id_producto}
+                        info_Producto={info_Producto}
+                        cantidad={cantidad}
+                        Disminuir={Disminuir}
+                        Aumentar={Aumentar}
+                        Agregar_Carrito={Agregar_Carrito}
+                        info_usuario={info_usuario}
                     />
 
                     <Text style={estilos.texto_ver_producto}>Mas del vendedor</Text>
@@ -136,11 +397,31 @@ const Ver_Producto = () => {
 
                     <View style={estilos.caja_ver_productos}>
 
-                        <Formu_Resenas/>
+                        {info_usuario ?
+                        (
+                            <>
+                                {info_usuario.Rol === 'Cliente' ? 
+                                (
+                                    <Formu_Resenas
+                                        estrellas={estrellas}
+                                        setEstrellas={setEstrellas}
+                                        comentario={comentario}
+                                        setComentario={setComentario}
+                                        Subir_Resena={Subir_Resena}
+                                    />
+                                ) : 
+                                (
+                                    null
+                                )}
+                            </>
+                        ) :
+                        (
+                            null
+                        )}
 
                         <View style={estilos.opinion_ver_productos}>
-                            <Text style={estilos.puntuacion_ver_productos}>5.0</Text>
-                            <Text style={estilos.estrellas_ver_productos}>★★★★★</Text>
+                            <Text style={estilos.puntuacion_ver_productos}>{promedio}</Text>
+                            <Text style={estilos.estrellas_ver_productos}>{estrellasVisuales}</Text>
                         </View>
 
                         <View style={estilos.caja_resenas_ver_productos}>
@@ -157,6 +438,10 @@ const Ver_Producto = () => {
                                             nombre_usuario={r.NombreUsuario}
                                             estrellas={r.Estrellas}
                                             comentario={r.Comentario}
+                                            id_usuario_resena={r.Id_usuario}
+                                            id_usuario_logueado={id_usuario_logueado ?? 0}
+                                            Editar_Resena={Editar_Resena}
+                                            Eliminar_Resena={Eliminar_Resena}
                                         />
                                     ))}
                                 </>

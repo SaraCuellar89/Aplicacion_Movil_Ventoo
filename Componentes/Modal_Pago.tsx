@@ -2,24 +2,22 @@ import React, { useState } from "react";
 import { Modal, View, Text, TouchableOpacity, ScrollView, TextInput, Alert } from "react-native";
 import estilos from '../Componentes/css/Estilos_Modal'
 import { Picker } from "@react-native-picker/picker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from "../App";
 
 type navigationProp = NativeStackNavigationProp<RootStackParamList, "Principal">;
 
-
-
-// Definimos las props que recibirá el componente
 type ModalPagoProps = {
     visible: boolean;
     setVisible: (value: boolean) => void;
     total: number;
-    productos: Producto[];
+    direccion: string;
+    setDireccion: (valor: string) => void;
+    metodoPago: string;
+    setMetodo_Pago: (valor: string) => void;
+    Pagar_Pedido: () => void;
 }
-
-
 
 type Producto = {
     Id_producto: number;
@@ -29,65 +27,9 @@ type Producto = {
     Cantidad: number;
 };
 
-const Modal_Pago: React.FC<ModalPagoProps> = ({ visible, setVisible, total, productos }) => {
+const Modal_Pago: React.FC<ModalPagoProps> = ({ visible, setVisible, total, direccion, setDireccion, metodoPago, setMetodo_Pago, Pagar_Pedido}) => {
 
     const navigation = useNavigation<navigationProp>();
-
-
-    // ============ Realizar Pedido ============
-
-    const [metodoPago, setMetodo_Pago] = useState('')
-    const [direccion, setDireccion] = useState('')
-
-
-    const Pagar_Pedido = async () => {
-
-        if (!direccion.trim()) {
-            return Alert.alert("Ingresa una dirección válida");
-        }
-
-        if (!metodoPago) {
-            return Alert.alert("Selecciona un método de pago");
-        }
-
-        Alert.alert(
-            "Finalizar Pedido",
-            "¿Quieres finalizar tu pedido?",
-            [
-                {
-                    text: "Cancelar",
-                    style: "cancel"
-                },
-                {
-                    text: "Sí",
-                    onPress: async () => {
-                        const token = await AsyncStorage.getItem("token");
-
-                        try{
-                            const res = await fetch('https://backend-ventoo.vercel.app/crear_pedido', {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-                                body: JSON.stringify({direccion, metodoPago, total, productos})
-                            })
-
-                            const datos = await res.json()
-
-                            if(!datos.success){
-                                return Alert.alert('No se pudo realizar el pedido')
-                            }
-
-                            Alert.alert('¡Pedido Completado!')
-                            navigation.navigate('Pedidos')
-                        }
-                        catch(error){
-                            console.log('Error: ' + error)
-                        }
-                    }
-                }
-            ]
-        )
-    }
-
 
     return (
         <Modal

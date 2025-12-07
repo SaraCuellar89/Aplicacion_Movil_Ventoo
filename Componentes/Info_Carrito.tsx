@@ -5,10 +5,9 @@ import estilos from '../Componentes/css/Estilos_Tarjetas_Productos'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type CarritoModalPagoProps = {
-    productos: Producto[];
-    setProductos: React.Dispatch<React.SetStateAction<Producto[]>>;
-    setTotal: (total: number) => void;
+    productos: Producto[]
     setVisible: (value: boolean) => void;
+    Eliminar_Producto_Carrito: (value: number) => void;
 }
 
 type Producto = {
@@ -20,82 +19,9 @@ type Producto = {
 };
 
 
-const Info_Carrito: React.FC<CarritoModalPagoProps> = ({ setVisible, setTotal, productos,setProductos, }) => {
+const Info_Carrito: React.FC<CarritoModalPagoProps> = ({ setVisible, productos, Eliminar_Producto_Carrito }) => {
 
-    const [aceptar, setAceptar] = useState(false);
-    
-    // ============ Obtener productos apenas cargue la pagina ============
-    useEffect(() => {
-        const Obtener_Productos = async () => {
-
-            const token = await AsyncStorage.getItem("token");
-
-            try{
-                const res = await fetch('https://backend-ventoo.vercel.app/carrito', {
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                })
-
-                const datos = await res.json()
-                setProductos(datos.carrito)
-            }
-            catch(error){
-                console.log('Error: ' + error)
-            }
-        }
-
-        Obtener_Productos()
-    }, [setProductos])
-
-
-
-    // ============ Eliminar productos del carrito ============
-    const Eliminar_Producto_Carrito = (id_producto:number) => {
-        Alert.alert(
-            "Eliminar producto del carrito",
-            "¿Quieres eliminar ese producto de tu carrito?",
-            [
-                {
-                    text: "Cancelar",
-                    style: "cancel"
-                },
-                {
-                    text: "Sí",
-                    onPress: async () => {
-                        const token = await AsyncStorage.getItem("token");
-
-                        try{
-                            const res = await fetch(`https://backend-ventoo.vercel.app/carrito/eliminar/${id_producto}`, {
-                                method: "DELETE",
-                                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-                            })
-
-                            const datos = await res.json()
-
-                            if(!datos.success){
-                                return Alert.alert('No se pudo quitar el producto de tu carrito')
-                            }
-
-                            setProductos(productos.filter(p => p.Id_producto !== id_producto))
-                        } 
-                        catch(error){
-                            console.log('Error: ' + error)
-                        }
-                    }
-                }
-            ]
-        )
-    }
-
-    // ============ Obtener total del carrito ============
-    useEffect(() => {
-        const total = productos.reduce((sum, p) => sum + Number(p.Precio) * Number(p.Cantidad), 0);
-        setTotal(total);
-    }, [productos]);
-
-
-
+    const [aceptar, setAceptar] = useState(false)
 
     return(
         <View style={estilos.contenedor_info_carrito}>

@@ -8,58 +8,23 @@ import type { RootStackParamList } from "../App";
 
 type navigationProp = NativeStackNavigationProp<RootStackParamList, "Principal">;
 
-const Formu_Registro = () => {
+type Props = {
+    nombre: string;
+    setNombre: (value: string) => void;
+    telefono: string;
+    setTelefono: (value: string) => void;
+    correo: string;
+    setCorreo: (value: string) => void;
+    rol: string;
+    setRol: (value: string) => void;
+    contrasena: string;
+    setContrasena: (value: string) => void;
+    Registrarse: () => void;
+};
+
+const Formu_Registro: React.FC<Props> = ({ nombre, setNombre, telefono, setTelefono, correo, setCorreo, rol, setRol, contrasena, setContrasena, Registrarse }) => {
 
     const navigation = useNavigation<navigationProp>();
-
-    const [nombre, setNombre] = useState("");
-    const [telefono, setTelefono] = useState("");
-    const [correo, setCorreo] = useState("");
-    const [rol, setRol] = useState("Cliente");
-    const [contrasena, setContrasena] = useState("");
-
-    const Registrarse = async () => {
-
-        const emailRegex = /^[^@\s]+@[^@\s]+\.(com)$/;
-
-        if(nombre.length <= 10){
-            return Alert.alert('El nombre debe tener al menos 10 caracteres')
-        }
-        else if(telefono.length !== 10){
-            return Alert.alert('El teléfono debe ser igual a 10 digitos')
-        }
-        else if (isNaN(Number(telefono))) {
-            return Alert.alert('El teléfono debe contener solo números');
-        }
-        if (!emailRegex.test(correo)) {
-            return Alert.alert("El correo no es valido");
-        }
-        if(contrasena.length < 5){
-            return Alert.alert("La contraseña debe tener mas de 5 caracteres");
-        }
-
-        try{
-            const res = await fetch('https://backend-ventoo.vercel.app/registro', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({nombre, email:correo, telefono, contrasena, rol})
-            })
-
-            const datos = await res.json()
-
-            if(!datos.success){
-                return Alert.alert('No se pudo completar el registro')
-            }
-
-            Alert.alert('¡Registro Exitoso!')
-            navigation.navigate('Inicio_Sesion')
-        }
-        catch(error){
-            console.error('Error: ' + error)
-        }
-    }
 
     return(
         <View style={estilos.contenedor_formu_inicio_sesion}>    

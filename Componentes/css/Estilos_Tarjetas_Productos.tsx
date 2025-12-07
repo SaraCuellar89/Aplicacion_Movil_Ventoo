@@ -145,6 +145,14 @@ const estilos = StyleSheet.create({
         paddingHorizontal: 5
     },
     caja_estrellas_formu_resena: {
+        width: "100%",
+        backgroundColor: '#FFEDD0',
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#153B40',
+        overflow: "hidden",
+    },
+    caja_estrellas_formu_resena_2: {
         width: 320,
         backgroundColor: '#FFEDD0',
         borderRadius: 10,
@@ -203,7 +211,8 @@ const estilos = StyleSheet.create({
     },
     resena_tarjeta_resena: {
         width: '100%',
-        fontSize: 15
+        fontSize: 15,
+        paddingBottom: 20
     },
     input_editar: {
         width: '100%',

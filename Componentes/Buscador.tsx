@@ -3,11 +3,13 @@ import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import estilos from '../Componentes/css/Estilos_Encabezado';
 
 type Props = {
-  productos: (productos: any[]) => void;
+    setProductos: (productos: any[]) => void;
 }
 
-const Buscador: React.FC<Props> = ({productos}) => {
+const Buscador: React.FC<Props> = ({setProductos}) => {
 
+
+    // ============ Buscar Productos por su nombre ============
     const [nombre, setNombre] = useState('')
 
     const Buscar_Nombre = async () => {
@@ -23,13 +25,14 @@ const Buscador: React.FC<Props> = ({productos}) => {
 
             const datos = await res.json()
 
-            productos(datos.productos)
+            setProductos(datos.productos)
             setNombre('')
         }
         catch(error){
             console.log('Error: ' + error)
         }
     }
+
 
     return(
         <View style={estilos.contenedor_buscador}>

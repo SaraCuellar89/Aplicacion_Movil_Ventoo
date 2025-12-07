@@ -8,42 +8,17 @@ import type { RootStackParamList } from "../App";
 
 type navigationProp = NativeStackNavigationProp<RootStackParamList, "Principal">;
 
-const Formu_Inicio_Sesion = () => {
+type Props = {
+    correo: string;
+    setCorreo: (valor: string) => void;
+    contrasena: string;
+    setContrasena: (valor: string) => void;
+    Iniciar_Sesion: () => void;
+}
+
+const Formu_Inicio_Sesion: React.FC<Props> = ({ correo, setCorreo, contrasena, setContrasena, Iniciar_Sesion }) => {
 
     const navigation = useNavigation<navigationProp>();
-
-    const [correo, setCorreo] = useState("")
-    const [contrasena, setContrasena] = useState("")
-
-
-    const Iniciar_Sesion = async () => {
-        try{
-            const res = await fetch('https://backend-ventoo.vercel.app/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({email:correo, contrasena})
-            })
-
-            const datos = await res.json()
-
-            if(!datos.success){
-                return Alert.alert('No se pudo iniciar sesion')
-            }
-
-            //Guardar el token en el localstorage
-            await AsyncStorage.setItem("token", datos.token);
-            //const token = await AsyncStorage.getItem("token"); -- Leer token
-
-            Alert.alert(`¡Hola ${datos.usuario.Nombre}!`);
-            navigation.navigate('Opciones')
-        }
-        catch(error){
-            console.log('Error: ' + error)
-        }
-    }
-
 
     return(
         <View style={estilos.contenedor_formu_inicio_sesion}>

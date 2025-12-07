@@ -10,7 +10,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 type navigationProp = NativeStackNavigationProp<RootStackParamList, "Principal">;
 
 type Props = {
-    id_producto: number;
+    productos: Producto[];
+    Eliminar_Producto: (valor: number) => void;
 };
 
 type Producto = {
@@ -21,84 +22,9 @@ type Producto = {
 };
 
 
-
-const Info_Producto_Vendedor = ()=> {
+const Info_Producto_Vendedor: React.FC<Props> = ({productos, Eliminar_Producto})=> {
 
     const navigation = useNavigation<navigationProp>();
-
-
-    const [productos, setProductos] = useState<Producto[]>([]);
-
-    // ============ Obtener todos los productos del vendedor ============
-    useEffect(() => {
-
-        const Obtener_Productos = async () => {
-
-            const token = await AsyncStorage.getItem("token");
-
-            try{
-                const res = await fetch('https://backend-ventoo.vercel.app/productos_vendedor', {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}` 
-                    }
-                });
-
-                const datos = await res.json()
-
-                setProductos(datos.productos)
-            }
-            catch(error){
-                console.log('Error: ' + error)
-            }
-        }
-
-        Obtener_Productos()
-    }, [])
-
-
-
-    // ============ Funcion para eliminar productos ============
-    const Eliminar_Producto = async (id_producto: number) => {
-        Alert.alert(
-            "Eliminar Producto",
-            "¿Quieres eliminar este producto?",
-            [
-                {
-                    text: "Cancelar",
-                    style: "cancel"
-                },
-                {
-                    text: "Sí",
-                    onPress: async () => {
-                        const token = await AsyncStorage.getItem("token");
-
-                        try{
-                            const res = await fetch(`https://backend-ventoo.vercel.app/eliminar_producto/${id_producto}`, {
-                                method: "DELETE",
-                                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-                            })
-
-                            const datos = await res.json()
-
-                            if(!datos.success){
-                                return Alert.alert('No se pudo eliminar el producto')
-                            }
-
-                            Alert.alert('Producto Eliminado')
-                            setProductos(productos.filter(p => p.Id_producto !== id_producto));
-                        }
-                        catch(error){
-                            console.log('Error: ' + error)
-                        }
-                    }
-                }
-            ]
-        )
-    }
-
-
 
     return(
         <View style={estilos.contenedor_info_carrito}>

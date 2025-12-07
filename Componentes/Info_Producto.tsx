@@ -4,8 +4,21 @@ import estilos from '../Componentes/css/Estilos_Tarjetas_Productos'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = {
-    id_producto: number;
+    info_Producto: Info_Producto | null;
+    Disminuir: () => void;
+    cantidad: number;
+    Aumentar: () => void;
+    Agregar_Carrito: () => void;
+    info_usuario: Usuario | null; 
 };
+
+type Usuario = {
+    Id_usuario: number;
+    Nombre: string;
+    Email: string;
+    Rol: string;
+}
+
 
 type Info_Producto = {
     Nombre: string;
@@ -14,81 +27,7 @@ type Info_Producto = {
     Precio: number;
 };
 
-const Info_Producto: React.FC<Props> = ({ id_producto }) => {
-
-
-    const [cantidad, setCantidad] = useState(0)
-
-    const Aumentar = () => {
-        if(cantidad === 20){
-            setCantidad(20)
-        }
-        else{
-            setCantidad(cantidad + 1)
-        }
-    }
-
-    const Disminuir = () => {
-        if(cantidad === 1){
-            setCantidad(1)
-        }
-        else{
-            setCantidad(cantidad - 1)
-        }
-    }
-
-
-
-
-
-    const [info_Producto, setInfo_producto] = useState<Info_Producto | null>(null);
-
-    //Obtener informacion del producto
-    useEffect(() => {
-        const Obtener_Info_Producto = async () => {
-            try{
-                const res = await fetch(`https://backend-ventoo.vercel.app/producto/${id_producto}`)
-                const datos = await res.json()
-                
-                setInfo_producto(datos.producto)
-                setCantidad(1)
-            }  
-            catch(error){
-                console.log('Error: ' + error)
-            }
-        }
-        Obtener_Info_Producto()
-    }, [id_producto])
-
-
-
-
-    // ============ funcion para agregar productos al carrito ============
-    const Agregar_Carrito = async () => {
-
-        const token = await AsyncStorage.getItem("token");
-
-        try{
-            const res = await fetch('https://backend-ventoo.vercel.app/carrito/agregar', {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-                body: JSON.stringify({Id_producto:id_producto, Cantidad:cantidad})
-            })
-
-            const datos = await res.json()
-
-            if(!datos.success){
-                return Alert.alert('No se pudo agregar el producto al carrito')
-            }
-
-            Alert.alert('¡Producto agregado a tu carrito!')
-        }
-        catch(error){
-            console.log('Error: ' + error)
-        }
-    }
-    
-
+const Info_Producto: React.FC<Props> = ({ info_Producto, Disminuir, cantidad, Aumentar, Agregar_Carrito, info_usuario }) => {
     return(
         <View style={estilos.contenedor_info_producto}>
 
@@ -129,9 +68,25 @@ const Info_Producto: React.FC<Props> = ({ id_producto }) => {
 
                         </View>
 
-                        <TouchableOpacity style={estilos.btn_subir_formu_resena} onPress={Agregar_Carrito}>
-                            <Text style={estilos.texto_btn_subir_formu_resena}>Agregar</Text>
-                        </TouchableOpacity>
+                        {info_usuario ? (
+                            <>
+                                {info_usuario.Rol === 'Cliente' ? 
+                                (
+                                    <TouchableOpacity style={estilos.btn_subir_formu_resena} onPress={Agregar_Carrito}>
+                                        <Text style={estilos.texto_btn_comprar_info_carrito}>Agregar</Text>
+                                    </TouchableOpacity>
+                                ) : 
+                                (
+                                    <TouchableOpacity style={estilos.btn_desactivado_info_carrito} disabled={true}>
+                                        <Text style={estilos.texto_btn_subir_formu_resena}>Agregar</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </>
+                        ) : 
+                            <TouchableOpacity style={estilos.btn_desactivado_info_carrito} disabled={true}>
+                                <Text style={estilos.texto_btn_subir_formu_resena}>Agregar</Text>
+                            </TouchableOpacity>
+                        }
 
                     </View>
 

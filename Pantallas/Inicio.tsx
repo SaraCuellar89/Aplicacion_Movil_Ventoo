@@ -10,6 +10,7 @@ import Menu from "../Componentes/Menu";
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from "../App";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type navigationProp = NativeStackNavigationProp<RootStackParamList, "Principal">;
 
@@ -27,26 +28,12 @@ type Producto = {
     Imagen: string;
 };
 
-const tarjetasData: TarjetaData[] = [
-    {
-        id: 1,
-        texto: "Entra a tu cuenta",
-        imagen: require('../img/perfil-del-usuario.png'),
-        ruta: 'Inicio_Sesion'
-    },
-    {
-        id: 2,
-        texto: "Compra algo",
-        imagen: require('../img/anadir-a-la-cesta.png'),
-        ruta: 'Compra'
-    },
-    {
-        id: 3,
-        texto: "Vende tu mismo",
-        imagen: require('../img/no-se-vende.png'),
-        ruta: 'Inicio_Sesion'
-    }
-];
+type Usuario = {
+    Id_usuario: number;
+    Nombre: string;
+    Email: string;
+    Rol: string;
+};
 
 const Inicio = () => {
 
@@ -54,7 +41,8 @@ const Inicio = () => {
 
     const [productos, setProductos] = useState<Producto[]>([]);
 
-    //Obtener 3 productos aleatoriamente
+
+    // ============ Obtener 3 productos de manera aleatoria ============
     useEffect(() => {
         const Obtener_Productos = async () => {
             try{
@@ -77,6 +65,41 @@ const Inicio = () => {
     }, [])
 
 
+    // ============ Obtener la informacion del usuario en sesion ============
+    const [info_usuario, setInfo_usuario] = useState<Usuario | null>(null);
+
+    useEffect(() => {
+        const Obtener_Info_Usuario = async () => {
+
+            const token = await AsyncStorage.getItem("token");
+
+            try {
+                const res = await fetch('https://backend-ventoo.vercel.app/usuario_logueado', {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                const datos = await res.json();
+
+                console.log(datos)
+
+                if (datos.success) {
+                    setInfo_usuario(datos.usuario);
+                } else {
+                    setInfo_usuario(null);
+                }
+
+            } catch (error) {
+                console.error('Error: ' + error);
+            }
+        };
+
+        Obtener_Info_Usuario();
+    }, []);
+    
     return(
         <SafeAreaView style={{ flex: 1, backgroundColor: '#153B40'}}>
             
@@ -99,14 +122,9 @@ const Inicio = () => {
                             nestedScrollEnabled={true} 
                             
                         >
-                            {tarjetasData.map((tarjeta) => (
-                                <Tarjeta_Inicio
-                                    key={tarjeta.id}
-                                    texto={tarjeta.texto}
-                                    imagen={tarjeta.imagen}
-                                    ruta={tarjeta.ruta}
-                                />
-                            ))}
+                            <Tarjeta_Inicio
+                                info_usuario={info_usuario}
+                            />
                         </ScrollView>
                     </View>
 

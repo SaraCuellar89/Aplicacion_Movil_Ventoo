@@ -57,6 +57,9 @@ const estilos_encabezado = StyleSheet.create({
 
     // --------- Estilo tarjetas de inicio ---------
 
+    contenedor_tarjetas_inicio: {
+        flexDirection: 'row'
+    },
     caja_tarjeta_inicio: {
         backgroundColor: '#F26A4B',
         width: 130,
