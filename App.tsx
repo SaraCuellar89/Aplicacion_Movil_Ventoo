@@ -15,6 +15,7 @@ import Carrito from "./Pantallas/Carrito";
 import Productos_Vendedor from "./Pantallas/Productos_Vendedor";
 import Registro_Productos from "./Pantallas/Registro_Productos";
 import Editar_Producto from "./Pantallas/Editar_Producto";
+import Chat_Bot from "./Pantallas/Chat_Bot";
 
 export type RootStackParamList = {
     Principal: undefined,
@@ -30,7 +31,8 @@ export type RootStackParamList = {
     Carrito: undefined,
     Productos_Vendedor: undefined,
     Registro_Productos: undefined,
-    Editar_Producto: { id_producto: number }
+    Editar_Producto: { id_producto: number },
+    Chat_Bot: undefined
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -133,6 +135,13 @@ const App = () => {
                 <Stack.Screen 
                     name="Editar_Producto" 
                     component={Editar_Producto} 
+                    options={{ 
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen 
+                    name="Chat_Bot" 
+                    component={Chat_Bot} 
                     options={{ 
                         headerShown: false,
                     }}

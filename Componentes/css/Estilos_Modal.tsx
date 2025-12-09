@@ -116,6 +116,111 @@ const estilos = StyleSheet.create({
         fontSize: 50,
         color: '#FFEDD0'
     },
+
+
+
+
+
+    // --------- Estilos Caja Chat Bot ---------
+
+
+    scroll: {
+        backgroundColor: "#F2B279",
+    },
+
+    scrollContent: {
+        padding: 10,
+    },
+
+    contenedor_caja_chat_bot: {
+        backgroundColor: "#FFEDD0",
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: "#153B40",
+        padding: 10,
+    },
+
+    titulo_chat_bot: {
+        textAlign: 'center',
+        paddingTop: 20,
+        paddingBottom: 30,
+        fontSize: 22,
+        fontWeight: 600
+    },
+
+    lista_mensajes: {
+        alignItems: "flex-start",
+    },
+
+    /* ===== USER ===== */
+    caja_user_caja_chat_bot: {
+        alignSelf: "flex-end",
+        flexDirection: "row",
+        alignItems: "flex-end",
+        gap: 5,
+        marginBottom: 10,
+        maxWidth: "100%",
+    },
+
+    user_caja_chat_bot: {
+        maxWidth: "70%",
+        backgroundColor: "#F26A4B",
+        padding: 10,
+        borderRadius: 10,
+    },
+
+    texto_user_caja_chat_bot: {
+        color: "#FFEDD0",
+        fontSize: 16,
+    },
+
+    /* ===== BOT ===== */
+    caja_bot_caja_chat_bot: {
+        alignSelf: "flex-start",
+        flexDirection: "row",
+        alignItems: "flex-end",
+        gap: 5,
+        marginBottom: 10,
+        maxWidth: "100%",
+    },
+
+    bot_caja_chat_bot: {
+        maxWidth: "70%",
+        backgroundColor: "#F2B279",
+        padding: 10,
+        borderRadius: 10,
+    },
+
+    /* ===== IMAGES ===== */
+    img_caja_chat_bot: {
+        width: 30,
+        height: 30,
+    },
+
+    /* ===== INPUT ===== */
+    caja_input: {
+        flexDirection: "row",
+        justifyContent: 'center',
+        alignItems: "center",
+        gap: 10,
+        marginTop: 10,
+    },
+
+    input: {
+        width: '80%',
+        backgroundColor: '#FFEDD0',
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#153B40',
+        fontSize: 15,
+        color: 'black',
+        paddingHorizontal: 5
+    },
+
+    icon_enviar: {
+        width: 30,
+        height: 30,
+    },
  
 })
 

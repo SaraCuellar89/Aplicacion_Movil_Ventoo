@@ -93,7 +93,7 @@ const Menu = () => {
                 </TouchableOpacity>
             )}
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Chat_Bot')}>
                 <Image
                     source={require('../img/robot.png')}
                     resizeMode="contain"
