@@ -202,8 +202,7 @@ const Ver_Producto = () => {
             }
 
             Alert.alert('¡Reseña Subida!')
-            setComentario('')
-            setEstrellas(1)
+            navigation.replace("Ver_Producto", { id_producto });
         }
         catch(error){
             console.error('Error: ' + error)
